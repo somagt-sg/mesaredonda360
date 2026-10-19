@@ -1,0 +1,818 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar negocio | Mesa Redonda 360</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f1f5f9;
+            color: #172033;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background: #102b46;
+            color: white;
+            padding: 18px 24px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px #0000000d;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .completo {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+        }
+
+        select:disabled {
+            background: #e2e8f0;
+            cursor: not-allowed;
+        }
+
+        input[readonly] {
+            background: #f1f5f9;
+            color: #334155;
+            cursor: default;
+        }
+
+        .ayuda {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .direccion-vista {
+            min-height: 54px;
+            padding: 13px;
+            border: 1px solid #93c5fd;
+            border-radius: 7px;
+            background: #eff6ff;
+            color: #1e3a5f;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .botones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        button,
+        .boton {
+            display: inline-block;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 7px;
+            background: #1261a0;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .secundario {
+            background: #475569;
+        }
+
+        .guardar {
+            background: #15803d;
+        }
+
+        .errorlist {
+            color: #b91c1c;
+        }
+
+        @media (max-width: 650px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .completo {
+                grid-column: auto;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Mesa Redonda 360</h1>
+    <p>Registro de un nuevo negocio</p>
+</header>
+
+<main>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <section class="panel">
+                <strong>Revisa los siguientes campos:</strong>
+                {{ form.errors }}
+            </section>
+        {% endif %}
+
+        <section class="panel">
+            <h2>1. Datos del negocio</h2>
+
+            <div class="grid">
+                <div class="campo">
+                    <label for="{{ form.nombre.id_for_label }}">
+                        Nombre del negocio *
+                    </label>
+                    {{ form.nombre }}
+                    {{ form.nombre.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.ruc.id_for_label }}">RUC</label>
+                    {{ form.ruc }}
+                    {{ form.ruc.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.categoria.id_for_label }}">
+                        Categoría *
+                    </label>
+                    {{ form.categoria }}
+                    {{ form.categoria.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.telefono.id_for_label }}">
+                        Teléfono / WhatsApp
+                    </label>
+                    {{ form.telefono }}
+                    {{ form.telefono.errors }}
+                </div>
+
+                <div class="campo completo">
+                    <label for="{{ form.imagen.id_for_label }}">
+                        Logo o imagen del negocio
+                    </label>
+                    {{ form.imagen }}
+                    {{ form.imagen.errors }}
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>2. Ubicación y dirección</h2>
+
+            <div class="grid">
+                <div class="campo">
+                    <label for="id_region">Región *</label>
+                    <select name="region" id="id_region" required>
+                        <option value="">Cargando regiones...</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="id_provincia">Provincia *</label>
+                    <select
+                        name="provincia"
+                        id="id_provincia"
+                        required
+                        disabled
+                    >
+                        <option value="">Selecciona una provincia</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="id_distrito">Distrito *</label>
+                    <select
+                        name="distrito"
+                        id="id_distrito"
+                        required
+                        disabled
+                    >
+                        <option value="">Selecciona un distrito</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.tipo_via.id_for_label }}">
+                        Tipo de vía
+                    </label>
+                    {{ form.tipo_via }}
+                    {{ form.tipo_via.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.nombre_via.id_for_label }}">
+                        Nombre de vía
+                    </label>
+                    {{ form.nombre_via }}
+                    {{ form.nombre_via.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.numero.id_for_label }}">Número</label>
+                    {{ form.numero }}
+                    {{ form.numero.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.etapa.id_for_label }}">
+                        Galería, centro comercial o etapa
+                    </label>
+                    {{ form.etapa }}
+                    {{ form.etapa.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="id_piso">Piso</label>
+                    {{ form.piso }}
+                    {{ form.piso.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="id_puesto">Puesto</label>
+                    {{ form.puesto }}
+                    {{ form.puesto.errors }}
+                </div>
+
+                <div class="campo completo">
+                    <label for="{{ form.referencia.id_for_label }}">
+                        Referencia de ubicación
+                    </label>
+                    {{ form.referencia }}
+                    {{ form.referencia.errors }}
+                </div>
+
+                <div class="campo completo">
+                    <label for="id_direccion">
+                        Dirección definitiva
+                    </label>
+
+                    <input
+                        type="text"
+                        id="id_direccion"
+                        name="direccion"
+                        value="{{ form.direccion.value|default_if_none:'' }}"
+                        placeholder="Se generará automáticamente con los datos anteriores"
+                        readonly
+                    >
+                        Completa los datos de ubicación para generar la dirección.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>3. Coordenadas del negocio</h2>
+
+            <p class="ayuda">
+                Ingresa las coordenadas exactas para colocar el marcador en el mapa.
+            </p>
+
+            <div class="grid">
+                <div class="campo">
+                    <label for="{{ form.latitud.id_for_label }}">
+                        Latitud *
+                    </label>
+                    {{ form.latitud }}
+                    {{ form.latitud.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.longitud.id_for_label }}">
+                        Longitud *
+                    </label>
+                    {{ form.longitud }}
+                    {{ form.longitud.errors }}
+                </div>
+            </div>
+
+            <p class="ayuda">
+                Ejemplo para Lima: latitud -12.0460376 y longitud -77.0277071.
+            </p>
+        </section>
+
+        <section class="panel">
+            <h2>4. Información comercial</h2>
+
+            <div class="grid">
+                <div class="campo">
+                    <label for="{{ form.productos.id_for_label }}">
+                        Productos que vende
+                    </label>
+                    {{ form.productos }}
+                    {{ form.productos.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.descripcion.id_for_label }}">
+                        Descripción
+                    </label>
+                    {{ form.descripcion }}
+                    {{ form.descripcion.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.plan.id_for_label }}">Plan</label>
+                    {{ form.plan }}
+                    {{ form.plan.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.estado_membresia.id_for_label }}">
+                        Estado de membresía
+                    </label>
+                    {{ form.estado_membresia }}
+                    {{ form.estado_membresia.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.fecha_inicio_membresia.id_for_label }}">
+                        Inicio de membresía
+                    </label>
+                    {{ form.fecha_inicio_membresia }}
+                    {{ form.fecha_inicio_membresia.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.fecha_fin_membresia.id_for_label }}">
+                        Fin de membresía
+                    </label>
+                    {{ form.fecha_fin_membresia }}
+                    {{ form.fecha_fin_membresia.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.tiktok_url.id_for_label }}">TikTok</label>
+                    {{ form.tiktok_url }}
+                    {{ form.tiktok_url.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.facebook_url.id_for_label }}">
+                        Facebook
+                    </label>
+                    {{ form.facebook_url }}
+                    {{ form.facebook_url.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.instagram_url.id_for_label }}">
+                        Instagram
+                    </label>
+                    {{ form.instagram_url }}
+                    {{ form.instagram_url.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.whatsapp_url.id_for_label }}">
+                        Enlace de WhatsApp
+                    </label>
+                    {{ form.whatsapp_url }}
+                    {{ form.whatsapp_url.errors }}
+                </div>
+
+                <div class="campo completo">
+                    <label>
+                        {{ form.activo }}
+                        Visible en el mapa
+                    </label>
+                    {{ form.activo.errors }}
+                </div>
+            </div>
+
+            <div class="botones">
+                <button type="submit" class="guardar">
+                    Guardar negocio
+                </button>
+
+                <a href="{% url 'mapa_publico' %}" class="boton secundario">
+                    Cancelar y volver al mapa
+                </a>
+            </div>
+        </section>
+    </form>
+</main>
+
+{{ departamentos_json|json_script:"departamentos-data" }}
+{{ provincias_json|json_script:"provincias-data" }}
+{{ distritos_json|json_script:"distritos-data" }}
+
+<script>
+"use strict";
+
+document.addEventListener("DOMContentLoaded", function () {
+    const regionSelect = document.getElementById("id_region");
+    const provinciaSelect = document.getElementById("id_provincia");
+    const distritoSelect = document.getElementById("id_distrito");
+
+    const direccionInput = document.getElementById("id_direccion");
+    const direccionPrevia = document.getElementById("direccion_previa");
+
+    const tipoVia = document.getElementById("id_tipo_via");
+    const nombreVia = document.getElementById("id_nombre_via");
+    const numero = document.getElementById("id_numero");
+    const etapa = document.getElementById("id_etapa");
+    const piso = document.getElementById("id_piso");
+    const puesto = document.getElementById("id_puesto");
+    const referencia = document.getElementById("id_referencia");
+
+    function leerJSON(id) {
+        const elemento = document.getElementById(id);
+
+        if (!elemento) {
+            throw new Error("No se encontró el JSON: " + id);
+        }
+
+        return JSON.parse(elemento.textContent);
+    }
+
+    let departamentos;
+    let provincias;
+    let distritos;
+
+    try {
+        departamentos = leerJSON("departamentos-data");
+        provincias = leerJSON("provincias-data");
+        distritos = leerJSON("distritos-data");
+    } catch (error) {
+        console.error("Error leyendo los archivos de ubigeo:", error);
+        regionSelect.innerHTML =
+            '<option value="">Error al cargar regiones</option>';
+        return;
+    }
+
+    function convertirLista(datos) {
+        if (Array.isArray(datos)) {
+            return datos.flatMap(item => {
+                if (Array.isArray(item)) {
+                    return convertirLista(item);
+                }
+
+                return item && typeof item === "object" ? [item] : [];
+            });
+        }
+
+        if (!datos || typeof datos !== "object") {
+            return [];
+        }
+
+        return Object.entries(datos).flatMap(([clave, valor]) => {
+            if (Array.isArray(valor)) {
+                return convertirLista(valor).map(item => ({
+                    ...item,
+                    id_padre_ubigeo: item.id_padre_ubigeo ?? clave
+                }));
+            }
+
+            if (valor && typeof valor === "object") {
+                return [{
+                    ...valor,
+                    id_padre_ubigeo: valor.id_padre_ubigeo ?? clave
+                }];
+            }
+
+            return [];
+        });
+    }
+
+    function idDe(item) {
+        return String(
+            item.id_ubigeo ??
+            item.id ??
+            item.codigo_ubigeo ??
+            item.ubigeo ??
+            ""
+        );
+    }
+
+    function nombreDe(item) {
+        return String(
+            item.nombre_ubigeo ??
+            item.nombre ??
+            item.nombre_departamento ??
+            item.nombre_provincia ??
+            item.nombre_distrito ??
+            item.etiqueta_ubigeo ??
+            ""
+        );
+    }
+
+    function padreDe(item) {
+        return String(
+            item.id_padre_ubigeo ??
+            item.id_padre ??
+            item.padre ??
+            ""
+        );
+    }
+
+    function agregarOpciones(select, lista, textoInicial) {
+        select.replaceChildren();
+
+        const inicial = document.createElement("option");
+        inicial.value = "";
+        inicial.textContent = textoInicial;
+        select.appendChild(inicial);
+
+        const vistos = new Set();
+
+        lista.forEach(item => {
+            const id = idDe(item);
+            const nombre = nombreDe(item);
+
+            if (!id || !nombre || vistos.has(id)) {
+                return;
+            }
+
+            vistos.add(id);
+
+            const opcion = document.createElement("option");
+
+            /*
+             * El formulario envía el nombre, no el código de ubigeo.
+             * El código queda disponible para enlazar la siguiente lista.
+             */
+            opcion.value = nombre;
+            opcion.textContent = nombre;
+            opcion.dataset.ubigeoId = id;
+
+            select.appendChild(opcion);
+        });
+
+        return select.options.length > 1;
+    }
+
+    function buscarHijos(datos, idPadre) {
+        if (!idPadre) {
+            return [];
+        }
+
+        if (
+            datos &&
+            !Array.isArray(datos) &&
+            Object.prototype.hasOwnProperty.call(datos, String(idPadre))
+        ) {
+            const grupo = datos[String(idPadre)];
+
+            if (Array.isArray(grupo)) {
+                return convertirLista(grupo);
+            }
+        }
+
+        return convertirLista(datos).filter(
+            item => padreDe(item) === String(idPadre)
+        );
+    }
+
+    function idSeleccionado(select) {
+        const opcion = select.options[select.selectedIndex];
+        return opcion ? opcion.dataset.ubigeoId || "" : "";
+    }
+
+    const regionesCargadas = agregarOpciones(
+        regionSelect,
+        convertirLista(departamentos),
+        "Selecciona una región"
+    );
+
+    agregarOpciones(
+        provinciaSelect,
+        [],
+        "Selecciona una provincia"
+    );
+
+    agregarOpciones(
+        distritoSelect,
+        [],
+        "Selecciona un distrito"
+    );
+
+    provinciaSelect.disabled = true;
+    distritoSelect.disabled = true;
+
+    if (!regionesCargadas) {
+        regionSelect.innerHTML =
+            '<option value="">No se encontraron regiones</option>';
+
+        console.error(
+            "No se reconocieron regiones en departamentos.json",
+            departamentos
+        );
+    }
+
+    regionSelect.addEventListener("change", function () {
+        agregarOpciones(
+            provinciaSelect,
+            [],
+            "Selecciona una provincia"
+        );
+
+        agregarOpciones(
+            distritoSelect,
+            [],
+            "Selecciona un distrito"
+        );
+
+        provinciaSelect.disabled = true;
+        distritoSelect.disabled = true;
+
+        const idRegion = idSeleccionado(regionSelect);
+
+        if (!idRegion) {
+            actualizarDireccion();
+            return;
+        }
+
+        const lista = buscarHijos(provincias, idRegion);
+
+        provinciaSelect.disabled = !agregarOpciones(
+            provinciaSelect,
+            lista,
+            "Selecciona una provincia"
+        );
+
+        actualizarDireccion();
+    });
+
+    provinciaSelect.addEventListener("change", function () {
+        agregarOpciones(
+            distritoSelect,
+            [],
+            "Selecciona un distrito"
+        );
+
+        distritoSelect.disabled = true;
+
+        const idProvincia = idSeleccionado(provinciaSelect);
+
+        if (!idProvincia) {
+            actualizarDireccion();
+            return;
+        }
+
+        const lista = buscarHijos(distritos, idProvincia);
+
+        distritoSelect.disabled = !agregarOpciones(
+            distritoSelect,
+            lista,
+            "Selecciona un distrito"
+        );
+
+        actualizarDireccion();
+    });
+
+    distritoSelect.addEventListener("change", actualizarDireccion);
+
+    function valor(select) {
+        if (!select) return "";
+
+        const opcion = select.options[select.selectedIndex];
+
+        if (!opcion || !opcion.value) return "";
+
+        return opcion.textContent.trim();
+    }
+
+    function texto(campo) {
+        return campo && campo.value ? campo.value.trim() : "";
+    }
+
+    function construirDireccion() {
+        const partes = [];
+
+        if (tipoVia && tipoVia.value) {
+            const etiqueta =
+                tipoVia.options[tipoVia.selectedIndex].text.trim();
+
+            if (etiqueta && etiqueta !== "---------") {
+                partes.push(etiqueta);
+            }
+        }
+
+        if (texto(nombreVia)) partes.push(texto(nombreVia));
+
+        if (texto(numero)) partes.push("N.° " + texto(numero));
+
+        if (texto(etapa)) partes.push(texto(etapa));
+
+        if (piso && piso.value) {
+            partes.push("piso " + piso.value);
+        }
+
+        if (texto(puesto)) {
+            partes.push("puesto " + texto(puesto));
+        }
+
+        if (valor(distritoSelect)) {
+            partes.push("distrito de " + valor(distritoSelect));
+        }
+
+        if (valor(provinciaSelect)) {
+            partes.push("provincia de " + valor(provinciaSelect));
+        }
+
+        if (valor(regionSelect)) {
+            partes.push("región " + valor(regionSelect));
+        }
+
+        if (texto(referencia)) {
+            partes.push("Referencia: " + texto(referencia));
+        }
+
+        return partes.join(", ");
+    }
+
+    function actualizarDireccion() {
+        const direccion = construirDireccion();
+
+        direccionInput.value = direccion;
+        direccionPrevia.textContent = direccion ||
+            "Completa los datos de ubicación para generar la dirección.";
+    }
+
+    [
+        tipoVia,
+        nombreVia,
+        numero,
+        etapa,
+        piso,
+        puesto,
+        referencia
+    ].forEach(campo => {
+        if (campo) {
+            campo.addEventListener("input", actualizarDireccion);
+            campo.addEventListener("change", actualizarDireccion);
+        }
+    });
+
+    actualizarDireccion();
+});
+</script>
+
+</body>
+</html>
