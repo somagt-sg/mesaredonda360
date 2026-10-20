@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -141,6 +142,8 @@
 
         .errorlist {
             color: #b91c1c;
+            font-size: 13px;
+            margin: 4px 0 0;
         }
 
         @media (max-width: 650px) {
@@ -177,6 +180,10 @@
             </section>
         {% endif %}
 
+        <!-- ====================================== -->
+        <!-- 1. DATOS DEL NEGOCIO                  -->
+        <!-- ====================================== -->
+
         <section class="panel">
             <h2>1. Datos del negocio</h2>
 
@@ -193,9 +200,6 @@
                     <label for="{{ form.ruc.id_for_label }}">RUC</label>
                     {{ form.ruc }}
                     {{ form.ruc.errors }}
-                    <small class="ayuda">
-                        Opcional. Si lo ingresas, debe contener 11 dígitos.
-                    </small>
                 </div>
 
                 <div class="campo">
@@ -208,26 +212,10 @@
 
                 <div class="campo">
                     <label for="{{ form.telefono.id_for_label }}">
-                        Teléfono principal / WhatsApp
+                        Teléfono / WhatsApp
                     </label>
                     {{ form.telefono }}
                     {{ form.telefono.errors }}
-                </div>
-
-                <div class="campo">
-                    <label for="{{ form.telefono_2.id_for_label }}">
-                        Segundo teléfono (opcional)
-                    </label>
-                    {{ form.telefono_2 }}
-                    {{ form.telefono_2.errors }}
-                </div>
-
-                <div class="campo">
-                    <label for="{{ form.telefono_3.id_for_label }}">
-                        Tercer teléfono (opcional)
-                    </label>
-                    {{ form.telefono_3 }}
-                    {{ form.telefono_3.errors }}
                 </div>
 
                 <div class="campo completo">
@@ -239,6 +227,10 @@
                 </div>
             </div>
         </section>
+
+        <!-- ====================================== -->
+        <!-- 2. UBICACIÓN Y DIRECCIÓN               -->
+        <!-- ====================================== -->
 
         <section class="panel">
             <h2>2. Ubicación y dirección</h2>
@@ -280,10 +272,30 @@
 
                 <div class="campo">
                     <label for="{{ form.zona_sector.id_for_label }}">
-                        Zona / Sector / Urbanización / Asociación / Asentamiento humano / Otro
+                        Tipo de ubicación
                     </label>
+
                     {{ form.zona_sector }}
                     {{ form.zona_sector.errors }}
+
+                    <span class="ayuda">
+                        Selecciona zona, sector, urbanización, asociación,
+                        asentamiento humano u otro.
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.nombre_zona.id_for_label }}">
+                        Nombre de la ubicación
+                    </label>
+
+                    {{ form.nombre_zona }}
+                    {{ form.nombre_zona.errors }}
+
+                    <span class="ayuda">
+                        Escribe el nombre o número específico. Ejemplos:
+                        3, A, Las Flores o Nuevo Amanecer.
+                    </span>
                 </div>
 
                 <div class="campo">
@@ -303,7 +315,9 @@
                 </div>
 
                 <div class="campo">
-                    <label for="{{ form.numero.id_for_label }}">Número</label>
+                    <label for="{{ form.numero.id_for_label }}">
+                        Número
+                    </label>
                     {{ form.numero }}
                     {{ form.numero.errors }}
                 </div>
@@ -317,13 +331,15 @@
                 </div>
 
                 <div class="campo">
-                    <label for="id_piso">Piso</label>
+                    <label for="{{ form.piso.id_for_label }}">Piso</label>
                     {{ form.piso }}
                     {{ form.piso.errors }}
                 </div>
 
                 <div class="campo">
-                    <label for="id_puesto">Puesto / Stand</label>
+                    <label for="{{ form.puesto.id_for_label }}">
+                        Puesto / Stand
+                    </label>
                     {{ form.puesto }}
                     {{ form.puesto.errors }}
                 </div>
@@ -346,24 +362,31 @@
                         id="id_direccion"
                         name="direccion"
                         value="{{ form.direccion.value|default_if_none:'' }}"
-                        placeholder="Se generará automáticamente"
+                        placeholder="La dirección se generará automáticamente"
                         readonly
                     >
 
-                    <div id="direccion_previa" class="direccion-vista">
+                    <div
+                        id="direccion_previa"
+                        class="direccion-vista"
+                        aria-live="polite"
+                    >
                         Completa los datos de ubicación para generar la dirección.
                     </div>
-
-                    {{ form.direccion.errors }}
                 </div>
             </div>
         </section>
+
+        <!-- ====================================== -->
+        <!-- 3. COORDENADAS                         -->
+        <!-- ====================================== -->
 
         <section class="panel">
             <h2>3. Coordenadas del negocio</h2>
 
             <p class="ayuda">
-                Ingresa las coordenadas exactas para colocar el marcador en el mapa.
+                Ingresa las coordenadas exactas para colocar el marcador
+                del negocio en el mapa.
             </p>
 
             <div class="grid">
@@ -388,6 +411,10 @@
                 Ejemplo para Lima: latitud -12.0460376 y longitud -77.0277071.
             </p>
         </section>
+
+        <!-- ====================================== -->
+        <!-- 4. INFORMACIÓN COMERCIAL               -->
+        <!-- ====================================== -->
 
         <section class="panel">
             <h2>4. Información comercial</h2>
@@ -491,6 +518,7 @@
     </form>
 </main>
 
+<!-- Datos de ubicación del Perú -->
 {{ departamentos_json|json_script:"departamentos-data" }}
 {{ provincias_json|json_script:"provincias-data" }}
 {{ distritos_json|json_script:"distritos-data" }}
@@ -506,10 +534,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const direccionInput = document.getElementById("id_direccion");
     const direccionPrevia = document.getElementById("direccion_previa");
 
+    const zonaSector = document.getElementById("id_zona_sector");
+    const nombreZona = document.getElementById("id_nombre_zona");
+
     const tipoVia = document.getElementById("id_tipo_via");
     const nombreVia = document.getElementById("id_nombre_via");
     const numero = document.getElementById("id_numero");
-    const zonaSector = document.getElementById("id_zona_sector");
     const etapa = document.getElementById("id_etapa");
     const piso = document.getElementById("id_piso");
     const puesto = document.getElementById("id_puesto");
@@ -535,8 +565,10 @@ document.addEventListener("DOMContentLoaded", function () {
         distritos = leerJSON("distritos-data");
     } catch (error) {
         console.error("Error leyendo los archivos de ubigeo:", error);
+
         regionSelect.innerHTML =
             '<option value="">Error al cargar regiones</option>';
+
         return;
     }
 
@@ -626,6 +658,7 @@ document.addEventListener("DOMContentLoaded", function () {
             vistos.add(id);
 
             const opcion = document.createElement("option");
+
             opcion.value = nombre;
             opcion.textContent = nombre;
             opcion.dataset.ubigeoId = id;
@@ -757,6 +790,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     distritoSelect.addEventListener("change", actualizarDireccion);
 
+    function texto(campo) {
+        return campo && campo.value ? campo.value.trim() : "";
+    }
+
     function valor(select) {
         if (!select) return "";
 
@@ -767,38 +804,85 @@ document.addEventListener("DOMContentLoaded", function () {
         return opcion.textContent.trim();
     }
 
-    function texto(campo) {
-        return campo && campo.value ? campo.value.trim() : "";
+    function etiquetaUbicacion(tipo, nombre) {
+        const tipoLimpio = (tipo || "").trim();
+        let nombreLimpio = (nombre || "").trim();
+
+        if (!tipoLimpio) {
+            return nombreLimpio;
+        }
+
+        /*
+         * Evita duplicar el tipo cuando se escribe, por ejemplo,
+         * "Zona 3" en lugar de escribir solamente "3".
+         */
+        if (
+            nombreLimpio.toLocaleLowerCase("es").startsWith(
+                tipoLimpio.toLocaleLowerCase("es")
+            )
+        ) {
+            return nombreLimpio;
+        }
+
+        return nombreLimpio
+            ? tipoLimpio + " " + nombreLimpio
+            : tipoLimpio;
     }
 
     function construirDireccion() {
         const partes = [];
 
-        if (tipoVia && tipoVia.value) {
-            const etiqueta =
-                tipoVia.options[tipoVia.selectedIndex].text.trim();
+        // Tipo de ubicación y nombre específico
+        const ubicacion = etiquetaUbicacion(
+            texto(zonaSector),
+            texto(nombreZona)
+        );
 
-            if (etiqueta && etiqueta !== "---------") {
-                partes.push(etiqueta);
-            }
+        if (ubicacion) {
+            partes.push(ubicacion);
         }
 
-        if (texto(nombreVia)) partes.push(texto(nombreVia));
+        // Tipo y nombre de vía
+        const tipoViaTexto = tipoVia && tipoVia.value
+            ? tipoVia.options[tipoVia.selectedIndex].text.trim()
+            : "";
 
-        if (texto(numero)) partes.push("N.° " + texto(numero));
+        const nombreViaTexto = texto(nombreVia);
 
-        if (texto(zonaSector)) partes.push(texto(zonaSector));
+        if (
+            tipoViaTexto &&
+            tipoViaTexto !== "---------"
+        ) {
+            if (nombreViaTexto) {
+                partes.push(tipoViaTexto + " " + nombreViaTexto);
+            } else {
+                partes.push(tipoViaTexto);
+            }
+        } else if (nombreViaTexto) {
+            partes.push(nombreViaTexto);
+        }
 
-        if (texto(etapa)) partes.push(texto(etapa));
+        // Número del inmueble
+        if (texto(numero)) {
+            partes.push("N.° " + texto(numero));
+        }
 
+        // Galería, centro comercial o etapa
+        if (texto(etapa)) {
+            partes.push(texto(etapa));
+        }
+
+        // Piso
         if (piso && piso.value) {
             partes.push("piso " + piso.value);
         }
 
+        // Puesto o stand
         if (texto(puesto)) {
             partes.push("Puesto / Stand " + texto(puesto));
         }
 
+        // Distrito, provincia y región
         if (valor(distritoSelect)) {
             partes.push("distrito de " + valor(distritoSelect));
         }
@@ -811,6 +895,7 @@ document.addEventListener("DOMContentLoaded", function () {
             partes.push("región " + valor(regionSelect));
         }
 
+        // Referencia adicional
         if (texto(referencia)) {
             partes.push("Referencia: " + texto(referencia));
         }
@@ -828,10 +913,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     [
+        zonaSector,
+        nombreZona,
         tipoVia,
         nombreVia,
         numero,
-        zonaSector,
         etapa,
         piso,
         puesto,

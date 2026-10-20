@@ -58,6 +58,19 @@ class NegocioForm(forms.ModelForm):
         ),
     )
 
+    nombre_zona = forms.CharField(
+        required=False,
+        max_length=150,
+        label="Nombre de la ubicación",
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_nombre_zona",
+                "placeholder": "Ej.: Urbanización Las Flores",
+                "maxlength": "150",
+            }
+        ),
+    )
+
     piso = forms.TypedChoiceField(
         required=False,
         coerce=int,
