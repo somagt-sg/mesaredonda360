@@ -142,8 +142,6 @@
 
         .errorlist {
             color: #b91c1c;
-            font-size: 13px;
-            margin: 4px 0 0;
         }
 
         @media (max-width: 650px) {
@@ -179,10 +177,6 @@
                 {{ form.errors }}
             </section>
         {% endif %}
-
-        <!-- ====================================== -->
-        <!-- 1. DATOS DEL NEGOCIO                  -->
-        <!-- ====================================== -->
 
         <section class="panel">
             <h2>1. Datos del negocio</h2>
@@ -228,74 +222,37 @@
             </div>
         </section>
 
-        <!-- ====================================== -->
-        <!-- 2. UBICACIÓN Y DIRECCIÓN               -->
-        <!-- ====================================== -->
-
         <section class="panel">
             <h2>2. Ubicación y dirección</h2>
 
+            <p class="ayuda">
+                Registra la dirección de la vía y, después del número,
+                la urbanización, zona, sector, asociación u otra ubicación.
+            </p>
+
             <div class="grid">
+
                 <div class="campo">
                     <label for="id_region">Región *</label>
                     <select name="region" id="id_region" required>
                         <option value="">Cargando regiones...</option>
                     </select>
-                    {{ form.region.errors }}
                 </div>
 
                 <div class="campo">
                     <label for="id_provincia">Provincia *</label>
-                    <select
-                        name="provincia"
-                        id="id_provincia"
-                        required
-                        disabled
-                    >
+                    <select name="provincia" id="id_provincia"
+                            required disabled>
                         <option value="">Selecciona una provincia</option>
                     </select>
-                    {{ form.provincia.errors }}
                 </div>
 
                 <div class="campo">
                     <label for="id_distrito">Distrito *</label>
-                    <select
-                        name="distrito"
-                        id="id_distrito"
-                        required
-                        disabled
-                    >
+                    <select name="distrito" id="id_distrito"
+                            required disabled>
                         <option value="">Selecciona un distrito</option>
                     </select>
-                    {{ form.distrito.errors }}
-                </div>
-
-                <div class="campo">
-                    <label for="{{ form.zona_sector.id_for_label }}">
-                        Tipo de ubicación
-                    </label>
-
-                    {{ form.zona_sector }}
-                    {{ form.zona_sector.errors }}
-
-                    <span class="ayuda">
-                        Selecciona zona, sector, urbanización, asociación,
-                        asentamiento humano u otro.
-                    </span>
-                </div>
-
-                <div class="campo">
-                    <label for="{{ form.nombre_zona.id_for_label }}">
-                        Nombre de la ubicación
-                    </label>
-
-                    {{ form.nombre_zona }}
-                    {{ form.nombre_zona.errors }}
-
-                    <span class="ayuda">
-                        Escribe el nombre o número específico. Ejemplos:
-                        3, A, Las Flores o Nuevo Amanecer.
-                    </span>
                 </div>
 
                 <div class="campo">
@@ -315,11 +272,29 @@
                 </div>
 
                 <div class="campo">
-                    <label for="{{ form.numero.id_for_label }}">
-                        Número
-                    </label>
+                    <label for="{{ form.numero.id_for_label }}">Número</label>
                     {{ form.numero }}
                     {{ form.numero.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.zona_sector.id_for_label }}">
+                        Tipo de ubicación
+                    </label>
+                    {{ form.zona_sector }}
+                    {{ form.zona_sector.errors }}
+                </div>
+
+                <div class="campo">
+                    <label for="{{ form.nombre_zona.id_for_label }}">
+                        Nombre de la ubicación
+                    </label>
+                    {{ form.nombre_zona }}
+                    {{ form.nombre_zona.errors }}
+                    <small class="ayuda">
+                        Ejemplo: Urbanización Las Flores, Zona 3,
+                        Sector A o Asociación Nuevo Amanecer.
+                    </small>
                 </div>
 
                 <div class="campo">
@@ -331,15 +306,13 @@
                 </div>
 
                 <div class="campo">
-                    <label for="{{ form.piso.id_for_label }}">Piso</label>
+                    <label for="id_piso">Piso</label>
                     {{ form.piso }}
                     {{ form.piso.errors }}
                 </div>
 
                 <div class="campo">
-                    <label for="{{ form.puesto.id_for_label }}">
-                        Puesto / Stand
-                    </label>
+                    <label for="id_puesto">Puesto</label>
                     {{ form.puesto }}
                     {{ form.puesto.errors }}
                 </div>
@@ -353,9 +326,7 @@
                 </div>
 
                 <div class="campo completo">
-                    <label for="id_direccion">
-                        Dirección definitiva
-                    </label>
+                    <label for="id_direccion">Dirección definitiva</label>
 
                     <input
                         type="text"
@@ -366,27 +337,19 @@
                         readonly
                     >
 
-                    <div
-                        id="direccion_previa"
-                        class="direccion-vista"
-                        aria-live="polite"
-                    >
+                    <div id="direccion_previa" class="direccion-vista">
                         Completa los datos de ubicación para generar la dirección.
                     </div>
                 </div>
+
             </div>
         </section>
-
-        <!-- ====================================== -->
-        <!-- 3. COORDENADAS                         -->
-        <!-- ====================================== -->
 
         <section class="panel">
             <h2>3. Coordenadas del negocio</h2>
 
             <p class="ayuda">
-                Ingresa las coordenadas exactas para colocar el marcador
-                del negocio en el mapa.
+                Ingresa las coordenadas exactas para colocar el marcador en el mapa.
             </p>
 
             <div class="grid">
@@ -411,10 +374,6 @@
                 Ejemplo para Lima: latitud -12.0460376 y longitud -77.0277071.
             </p>
         </section>
-
-        <!-- ====================================== -->
-        <!-- 4. INFORMACIÓN COMERCIAL               -->
-        <!-- ====================================== -->
 
         <section class="panel">
             <h2>4. Información comercial</h2>
@@ -518,7 +477,6 @@
     </form>
 </main>
 
-<!-- Datos de ubicación del Perú -->
 {{ departamentos_json|json_script:"departamentos-data" }}
 {{ provincias_json|json_script:"provincias-data" }}
 {{ distritos_json|json_script:"distritos-data" }}
@@ -534,12 +492,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const direccionInput = document.getElementById("id_direccion");
     const direccionPrevia = document.getElementById("direccion_previa");
 
-    const zonaSector = document.getElementById("id_zona_sector");
-    const nombreZona = document.getElementById("id_nombre_zona");
-
     const tipoVia = document.getElementById("id_tipo_via");
     const nombreVia = document.getElementById("id_nombre_via");
     const numero = document.getElementById("id_numero");
+
+    const zonaSector = document.getElementById("id_zona_sector");
+    const nombreZona = document.getElementById("id_nombre_zona");
+
     const etapa = document.getElementById("id_etapa");
     const piso = document.getElementById("id_piso");
     const puesto = document.getElementById("id_puesto");
@@ -565,10 +524,8 @@ document.addEventListener("DOMContentLoaded", function () {
         distritos = leerJSON("distritos-data");
     } catch (error) {
         console.error("Error leyendo los archivos de ubigeo:", error);
-
         regionSelect.innerHTML =
             '<option value="">Error al cargar regiones</option>';
-
         return;
     }
 
@@ -658,7 +615,6 @@ document.addEventListener("DOMContentLoaded", function () {
             vistos.add(id);
 
             const opcion = document.createElement("option");
-
             opcion.value = nombre;
             opcion.textContent = nombre;
             opcion.dataset.ubigeoId = id;
@@ -790,10 +746,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     distritoSelect.addEventListener("change", actualizarDireccion);
 
-    function texto(campo) {
-        return campo && campo.value ? campo.value.trim() : "";
-    }
-
     function valor(select) {
         if (!select) return "";
 
@@ -804,85 +756,69 @@ document.addEventListener("DOMContentLoaded", function () {
         return opcion.textContent.trim();
     }
 
-    function etiquetaUbicacion(tipo, nombre) {
-        const tipoLimpio = (tipo || "").trim();
-        let nombreLimpio = (nombre || "").trim();
-
-        if (!tipoLimpio) {
-            return nombreLimpio;
-        }
-
-        /*
-         * Evita duplicar el tipo cuando se escribe, por ejemplo,
-         * "Zona 3" en lugar de escribir solamente "3".
-         */
-        if (
-            nombreLimpio.toLocaleLowerCase("es").startsWith(
-                tipoLimpio.toLocaleLowerCase("es")
-            )
-        ) {
-            return nombreLimpio;
-        }
-
-        return nombreLimpio
-            ? tipoLimpio + " " + nombreLimpio
-            : tipoLimpio;
+    function texto(campo) {
+        return campo && campo.value ? campo.value.trim() : "";
     }
 
     function construirDireccion() {
         const partes = [];
 
-        // Tipo de ubicación y nombre específico
-        const ubicacion = etiquetaUbicacion(
-            texto(zonaSector),
-            texto(nombreZona)
-        );
+        // 1. Tipo de vía
+        if (tipoVia && tipoVia.value) {
+            const etiqueta =
+                tipoVia.options[tipoVia.selectedIndex].text.trim();
 
-        if (ubicacion) {
-            partes.push(ubicacion);
-        }
-
-        // Tipo y nombre de vía
-        const tipoViaTexto = tipoVia && tipoVia.value
-            ? tipoVia.options[tipoVia.selectedIndex].text.trim()
-            : "";
-
-        const nombreViaTexto = texto(nombreVia);
-
-        if (
-            tipoViaTexto &&
-            tipoViaTexto !== "---------"
-        ) {
-            if (nombreViaTexto) {
-                partes.push(tipoViaTexto + " " + nombreViaTexto);
-            } else {
-                partes.push(tipoViaTexto);
+            if (etiqueta && etiqueta !== "---------") {
+                partes.push(etiqueta);
             }
-        } else if (nombreViaTexto) {
-            partes.push(nombreViaTexto);
         }
 
-        // Número del inmueble
+        // 2. Nombre de vía
+        if (texto(nombreVia)) {
+            partes.push(texto(nombreVia));
+        }
+
+        // 3. Número
         if (texto(numero)) {
             partes.push("N.° " + texto(numero));
         }
 
-        // Galería, centro comercial o etapa
+        // 4. Urbanización, zona, sector, asociación u otro tipo
+        const tipoUbicacion = valor(zonaSector);
+        const nombreUbicacion = texto(nombreZona);
+
+        if (tipoUbicacion && nombreUbicacion) {
+            partes.push(tipoUbicacion + " " + nombreUbicacion);
+        } else if (nombreUbicacion) {
+            partes.push(nombreUbicacion);
+        } else if (tipoUbicacion) {
+            partes.push(tipoUbicacion);
+        }
+
+        // 5. Galería o centro comercial
         if (texto(etapa)) {
-            partes.push(texto(etapa));
+            const nombreEtapa = texto(etapa);
+
+            if (/^galería\b/i.test(nombreEtapa)) {
+                partes.push(nombreEtapa);
+            } else if (/^centro comercial\b/i.test(nombreEtapa)) {
+                partes.push(nombreEtapa);
+            } else {
+                partes.push("Galería " + nombreEtapa);
+            }
         }
 
-        // Piso
-        if (piso && piso.value) {
-            partes.push("piso " + piso.value);
+        // 6. Piso
+        if (texto(piso)) {
+            partes.push("piso " + texto(piso));
         }
 
-        // Puesto o stand
+        // 7. Puesto
         if (texto(puesto)) {
-            partes.push("Puesto / Stand " + texto(puesto));
+            partes.push("puesto " + texto(puesto));
         }
 
-        // Distrito, provincia y región
+        // 8. Distrito, provincia y región
         if (valor(distritoSelect)) {
             partes.push("distrito de " + valor(distritoSelect));
         }
@@ -895,7 +831,7 @@ document.addEventListener("DOMContentLoaded", function () {
             partes.push("región " + valor(regionSelect));
         }
 
-        // Referencia adicional
+        // 9. Referencia
         if (texto(referencia)) {
             partes.push("Referencia: " + texto(referencia));
         }
@@ -913,11 +849,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     [
-        zonaSector,
-        nombreZona,
         tipoVia,
         nombreVia,
         numero,
+        zonaSector,
+        nombreZona,
         etapa,
         piso,
         puesto,
