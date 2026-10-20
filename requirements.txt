@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+﻿
+>>>>>>> 3baa90d (Configura Cloudinary para imagenes)
 asgiref==3.12.1
 Django==6.1.2
 gunicorn==26.2.0
@@ -8,4 +12,8 @@ whitenoise==6.12.0
 dj-database-url
 psycopg2-binary
 cloudinary
+<<<<<<< HEAD
 django-cloudinary-storage
+=======
+django-cloudinary-storage
+>>>>>>> 3baa90d (Configura Cloudinary para imagenes)

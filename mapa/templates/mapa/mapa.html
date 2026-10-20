@@ -615,6 +615,26 @@
             padding: 2px 1px;
         }
 
+        /* Imagen principal del negocio en el marcador. */
+        .popup-imagen-contenedor {
+            width: 100%;
+            margin: 0 0 12px;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #f1f5f9;
+        }
+
+        .popup-imagen {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            height: 170px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 10px;
+            background: #f1f5f9;
+        }
+
         .popup-negocio h3 {
             margin: 7px 0;
             color: var(--azul);
@@ -665,7 +685,6 @@
         .popup-como-llegar { background: #1d4ed8; }
         .popup-como-llegar:hover { background: #1e40af; }
 
-        /* Botón de edición exclusivo del superusuario. */
         .popup-editar {
             display: inline-flex;
             align-items: center;
@@ -848,6 +867,10 @@
                 width: max-content;
                 max-width: calc(100% - 24px);
                 font-size: 11px;
+            }
+
+            .popup-imagen {
+                height: 150px;
             }
 
             .pie {
@@ -1215,8 +1238,32 @@ document.addEventListener("DOMContentLoaded", function () {
         const telefonoOriginal = String(negocio.telefono || "");
         const telefono = textoSeguro(telefonoOriginal);
 
+        /*
+         * La plantilla ya está preparada para mostrar la imagen.
+         * El dato negocio.imagen debe enviarse desde views.py.
+         */
+        const imagenOriginal = String(negocio.imagen || "").trim();
+        const imagen = textoSeguro(imagenOriginal);
+
         let contenido = `
             <div class="popup-negocio">
+        `;
+
+        if (imagen) {
+            contenido += `
+                <div class="popup-imagen-contenedor">
+                    <img
+                        class="popup-imagen"
+                        src="${imagen}"
+                        alt="Imagen de ${nombre || "negocio"}"
+                        loading="lazy"
+                        onerror="this.parentElement.style.display='none';"
+                    >
+                </div>
+            `;
+        }
+
+        contenido += `
                 <span class="popup-categoria">${categoria || "Negocio"}</span>
                 <h3>${nombre || "Negocio sin nombre"}</h3>
         `;
@@ -1280,10 +1327,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         {% if es_superusuario %}
-        /*
-         * Este enlace solo se genera para el superusuario.
-         * La ruta utiliza el ID real del negocio seleccionado.
-         */
         const urlEdicionBase = "{% url 'editar_negocio' 0 %}";
         const urlEdicion = urlEdicionBase.replace(
             "/0/editar/",

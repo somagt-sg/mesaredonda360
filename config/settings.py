@@ -1,27 +1,25 @@
-
-"""
-Django settings for config project.
-"""
-
 import os
 from pathlib import Path
 
 import dj_database_url
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# =========================================================
+# =====================================================
 # SEGURIDAD
-# =========================================================
+# =====================================================
 
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "django-insecure-local-development-key-change-before-production",
+    "django-insecure-mesaredonda360-clave-local"
 )
 
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+DEBUG = os.environ.get("DEBUG", "False").lower() in (
+    "true",
+    "1",
+    "yes",
+)
 
 ALLOWED_HOSTS = [
     "mesaredonda360.onrender.com",
@@ -29,21 +27,18 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-
-# =========================================================
-# CLOUDINARY
-# =========================================================
-
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
+hosts_extra = os.environ.get("ALLOWED_HOSTS", "")
+if hosts_extra:
+    ALLOWED_HOSTS.extend(
+        host.strip()
+        for host in hosts_extra.split(",")
+        if host.strip()
+    )
 
 
-# =========================================================
+# =====================================================
 # APLICACIONES
-# =========================================================
+# =====================================================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -52,15 +47,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "cloudinary",
-    "cloudinary_storage",
     "mapa",
 ]
 
 
-# =========================================================
+# =====================================================
 # MIDDLEWARE
-# =========================================================
+# =====================================================
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -74,17 +67,16 @@ MIDDLEWARE = [
 ]
 
 
+# =====================================================
+# URLS Y PLANTILLAS
+# =====================================================
+
 ROOT_URLCONF = "config.urls"
-
-
-# =========================================================
-# PLANTILLAS
-# =========================================================
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -96,14 +88,13 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-# =========================================================
+# =====================================================
 # BASE DE DATOS
-# Neon PostgreSQL en Render y SQLite en local
-# =========================================================
+# PostgreSQL en Render y SQLite local
+# =====================================================
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
@@ -112,7 +103,7 @@ if DATABASE_URL:
         "default": dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True,
+            ssl_require=DATABASE_URL.startswith("postgres"),
         )
     }
 else:
@@ -124,9 +115,9 @@ else:
     }
 
 
-# =========================================================
+# =====================================================
 # VALIDACIÓN DE CONTRASEÑAS
-# =========================================================
+# =====================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -150,15 +141,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
             "django.contrib.auth.password_validation."
+            "CommonPasswordValidator"
+        ),
+    },
+    {
+        "NAME": (
+            "django.contrib.auth.password_validation."
             "NumericPasswordValidator"
         ),
     },
 ]
 
 
-# =========================================================
-# INTERNACIONALIZACIÓN
-# =========================================================
+# =====================================================
+# IDIOMA Y ZONA HORARIA
+# =====================================================
 
 LANGUAGE_CODE = "es-pe"
 
@@ -169,9 +166,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# =========================================================
-# ARCHIVOS ESTÁTICOS Y ARCHIVOS SUBIDOS
-# =========================================================
+# =====================================================
+# ARCHIVOS ESTÁTICOS
+# =====================================================
 
 STATIC_URL = "/static/"
 
@@ -179,9 +176,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {
-        "BACKEND": (
-            "cloudinary_storage.storage.MediaCloudinaryStorage"
-        ),
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": (
@@ -191,15 +186,27 @@ STORAGES = {
 }
 
 
-# =========================================================
-# CLAVE PRIMARIA PREDETERMINADA
-# =========================================================
+# =====================================================
+# IMÁGENES Y ARCHIVOS SUBIDOS
+# =====================================================
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+# =====================================================
+# CONFIGURACIÓN GENERAL
+# =====================================================
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# =========================================================
+# =====================================================
 # CORREO
-# =========================================================
+# =====================================================
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"
+)
+```
