@@ -1,140 +1,38 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registrar negocio | Mesa Redonda 360</title>
+    <title>{% if es_edicion %}Editar negocio{% else %}Registrar negocio{% endif %} | Mesa Redonda 360</title>
 
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          crossorigin="">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 
     <style>
         * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            background: #f1f5f9;
-            color: #172033;
-            font-family: Arial, sans-serif;
-        }
-
-        header {
-            background: #102b46;
-            color: white;
-            padding: 18px 24px;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 23px;
-        }
-
+        body { margin: 0; background: #f1f5f9; color: #172033; font-family: Arial, sans-serif; }
+        header { background: #102b46; color: white; padding: 18px 24px; }
+        header h1 { margin: 0; font-size: 23px; }
         header p { margin-bottom: 0; }
-
-        main {
-            max-width: 1100px;
-            margin: 24px auto;
-            padding: 0 16px;
-        }
-
-        .panel {
-            background: white;
-            border-radius: 12px;
-            padding: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px #0000000d;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .campo {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
+        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .panel { background: white; border-radius: 12px; padding: 22px; margin-bottom: 20px; box-shadow: 0 2px 12px #0000000d; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
         .completo { grid-column: 1 / -1; }
-
-        label {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font: inherit;
-        }
-
+        label { font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; }
         input[type="checkbox"] { width: auto; }
-
-        select:disabled {
-            background: #e2e8f0;
-            cursor: not-allowed;
-        }
-
-        input[readonly] {
-            background: #f1f5f9;
-            color: #334155;
-        }
-
-        .ayuda {
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .direccion-vista {
-            min-height: 54px;
-            padding: 13px;
-            border: 1px solid #93c5fd;
-            border-radius: 7px;
-            background: #eff6ff;
-            color: #1e3a5f;
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        #mapa-coordenadas {
-            width: 100%;
-            height: 380px;
-            border: 1px solid #cbd5e1;
-            border-radius: 9px;
-            z-index: 1;
-        }
-
-        .botones {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        button, .boton {
-            display: inline-block;
-            padding: 12px 18px;
-            border: 0;
-            border-radius: 7px;
-            background: #1261a0;
-            color: white;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
+        select:disabled { background: #e2e8f0; cursor: not-allowed; }
+        input[readonly] { background: #f1f5f9; color: #334155; }
+        .ayuda { color: #475569; font-size: 14px; line-height: 1.5; }
+        .direccion-vista { min-height: 54px; padding: 13px; border: 1px solid #93c5fd; border-radius: 7px; background: #eff6ff; color: #1e3a5f; line-height: 1.6; overflow-wrap: anywhere; }
+        #mapa-coordenadas { width: 100%; height: 380px; border: 1px solid #cbd5e1; border-radius: 9px; z-index: 1; }
+        .botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        button, .boton { display: inline-block; padding: 12px 18px; border: 0; border-radius: 7px; background: #1261a0; color: white; font-weight: bold; text-decoration: none; cursor: pointer; }
         .secundario { background: #475569; }
         .guardar { background: #15803d; }
         .errorlist { color: #b91c1c; }
-
         @media (max-width: 650px) {
             .grid { grid-template-columns: 1fr; }
             .completo { grid-column: auto; }
@@ -146,7 +44,7 @@
 <body>
 <header>
     <h1>Mesa Redonda 360</h1>
-    <p>Registro de un nuevo negocio</p>
+    <p>{% if es_edicion %}Editar negocio{% else %}Registro de un nuevo negocio{% endif %}</p>
 </header>
 
 <main>
@@ -154,54 +52,43 @@
         {% csrf_token %}
 
         {% if form.errors %}
-            <section class="panel">
-                <strong>Revisa los siguientes campos:</strong>
-                {{ form.errors }}
-            </section>
+        <section class="panel">
+            <strong>Revisa los siguientes campos:</strong>
+            {{ form.errors }}
+        </section>
         {% endif %}
 
         <section class="panel">
             <h2>1. Datos del negocio</h2>
-
             <div class="grid">
                 <div class="campo">
                     <label for="{{ form.nombre.id_for_label }}">Nombre del negocio *</label>
-                    {{ form.nombre }}
-                    {{ form.nombre.errors }}
+                    {{ form.nombre }}{{ form.nombre.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.ruc.id_for_label }}">RUC</label>
-                    {{ form.ruc }}
-                    {{ form.ruc.errors }}
+                    {{ form.ruc }}{{ form.ruc.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.categoria.id_for_label }}">Categoría *</label>
-                    {{ form.categoria }}
-                    {{ form.categoria.errors }}
+                    {{ form.categoria }}{{ form.categoria.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.telefono.id_for_label }}">Teléfono / WhatsApp</label>
-                    {{ form.telefono }}
-                    {{ form.telefono.errors }}
+                    {{ form.telefono }}{{ form.telefono.errors }}
                 </div>
-
                 <div class="campo completo">
                     <label for="{{ form.imagen.id_for_label }}">Logo o imagen del negocio</label>
-                    {{ form.imagen }}
-                    {{ form.imagen.errors }}
+                    {{ form.imagen }}{{ form.imagen.errors }}
                 </div>
             </div>
         </section>
 
         <section class="panel">
             <h2>2. Ubicación y dirección</h2>
-
             <p class="ayuda">
-                Registra la dirección de la vía y, después del número,
-                la urbanización, zona, sector, asociación u otra ubicación.
+                Al editar, se recuperarán los datos de ubicación guardados.
+                Completa la vía y los datos adicionales de dirección.
             </p>
 
             <div class="grid">
@@ -210,6 +97,7 @@
                     <select name="region" id="id_region" required>
                         <option value="">Cargando regiones...</option>
                     </select>
+                    {{ form.region.errors }}
                 </div>
 
                 <div class="campo">
@@ -217,6 +105,7 @@
                     <select name="provincia" id="id_provincia" required disabled>
                         <option value="">Selecciona una provincia</option>
                     </select>
+                    {{ form.provincia.errors }}
                 </div>
 
                 <div class="campo">
@@ -224,66 +113,46 @@
                     <select name="distrito" id="id_distrito" required disabled>
                         <option value="">Selecciona un distrito</option>
                     </select>
+                    {{ form.distrito.errors }}
                 </div>
 
                 <div class="campo">
                     <label for="{{ form.tipo_via.id_for_label }}">Tipo de vía</label>
-                    {{ form.tipo_via }}
-                    {{ form.tipo_via.errors }}
+                    {{ form.tipo_via }}{{ form.tipo_via.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.nombre_via.id_for_label }}">Nombre de vía</label>
-                    {{ form.nombre_via }}
-                    {{ form.nombre_via.errors }}
+                    {{ form.nombre_via }}{{ form.nombre_via.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.numero.id_for_label }}">Número</label>
-                    {{ form.numero }}
-                    {{ form.numero.errors }}
+                    {{ form.numero }}{{ form.numero.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.zona_sector.id_for_label }}">Tipo de ubicación</label>
-                    {{ form.zona_sector }}
-                    {{ form.zona_sector.errors }}
+                    {{ form.zona_sector }}{{ form.zona_sector.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.nombre_zona.id_for_label }}">Nombre de la ubicación</label>
-                    {{ form.nombre_zona }}
-                    {{ form.nombre_zona.errors }}
-                    <small class="ayuda">
-                        Ejemplo: Urbanización Las Flores, Zona 3,
-                        Sector A o Asociación Nuevo Amanecer.
-                    </small>
+                    {{ form.nombre_zona }}{{ form.nombre_zona.errors }}
+                    <small class="ayuda">Ejemplo: Urbanización Las Flores, Zona 3 o Sector A.</small>
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.etapa.id_for_label }}">Galería, centro comercial o etapa</label>
-                    {{ form.etapa }}
-                    {{ form.etapa.errors }}
+                    {{ form.etapa }}{{ form.etapa.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="id_piso">Piso</label>
-                    {{ form.piso }}
-                    {{ form.piso.errors }}
+                    {{ form.piso }}{{ form.piso.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="id_puesto">Puesto</label>
-                    {{ form.puesto }}
-                    {{ form.puesto.errors }}
+                    {{ form.puesto }}{{ form.puesto.errors }}
                 </div>
-
                 <div class="campo completo">
                     <label for="{{ form.referencia.id_for_label }}">Referencia de ubicación</label>
-                    {{ form.referencia }}
-                    {{ form.referencia.errors }}
+                    {{ form.referencia }}{{ form.referencia.errors }}
                 </div>
-
                 <div class="campo completo">
                     <label for="id_direccion">Dirección definitiva</label>
                     <input
@@ -295,7 +164,7 @@
                         readonly
                     >
                     <div id="direccion_previa" class="direccion-vista">
-                        Completa los datos de ubicación para generar la dirección.
+                        Se conservará la dirección guardada o se generará con los datos del formulario.
                     </div>
                 </div>
             </div>
@@ -303,114 +172,83 @@
 
         <section class="panel">
             <h2>3. Coordenadas del negocio</h2>
-
             <p class="ayuda">
-                Escribe las coordenadas exactas o haz clic en el mapa para
-                colocar el marcador. También puedes arrastrar el marcador.
+                Escribe la latitud y longitud para centrar el mapa en esa ubicación.
+                También puedes hacer clic en el mapa o arrastrar el marcador.
             </p>
 
             <div class="grid">
                 <div class="campo">
                     <label for="{{ form.latitud.id_for_label }}">Latitud *</label>
-                    {{ form.latitud }}
-                    {{ form.latitud.errors }}
+                    {{ form.latitud }}{{ form.latitud.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.longitud.id_for_label }}">Longitud *</label>
-                    {{ form.longitud }}
-                    {{ form.longitud.errors }}
+                    {{ form.longitud }}{{ form.longitud.errors }}
                 </div>
             </div>
 
             <p class="ayuda">
                 Ejemplo para Lima: latitud -12.0460376 y longitud -77.0277071.
+                El mapa se centrará al completar ambas coordenadas válidas.
             </p>
 
-            <div id="mapa-coordenadas"
-                 aria-label="Mapa para seleccionar la ubicación del negocio"></div>
-
-            <p class="ayuda">
-                Haz clic en el mapa para elegir la ubicación exacta.
-                El marcador actualizará automáticamente la latitud y longitud.
-            </p>
+            <div id="mapa-coordenadas" aria-label="Mapa para seleccionar la ubicación del negocio"></div>
         </section>
 
         <section class="panel">
             <h2>4. Información comercial</h2>
-
             <div class="grid">
                 <div class="campo">
                     <label for="{{ form.productos.id_for_label }}">Productos que vende</label>
-                    {{ form.productos }}
-                    {{ form.productos.errors }}
+                    {{ form.productos }}{{ form.productos.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.descripcion.id_for_label }}">Descripción</label>
-                    {{ form.descripcion }}
-                    {{ form.descripcion.errors }}
+                    {{ form.descripcion }}{{ form.descripcion.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.plan.id_for_label }}">Plan</label>
-                    {{ form.plan }}
-                    {{ form.plan.errors }}
+                    {{ form.plan }}{{ form.plan.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.estado_membresia.id_for_label }}">Estado de membresía</label>
-                    {{ form.estado_membresia }}
-                    {{ form.estado_membresia.errors }}
+                    {{ form.estado_membresia }}{{ form.estado_membresia.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.fecha_inicio_membresia.id_for_label }}">Inicio de membresía</label>
-                    {{ form.fecha_inicio_membresia }}
-                    {{ form.fecha_inicio_membresia.errors }}
+                    {{ form.fecha_inicio_membresia }}{{ form.fecha_inicio_membresia.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.fecha_fin_membresia.id_for_label }}">Fin de membresía</label>
-                    {{ form.fecha_fin_membresia }}
-                    {{ form.fecha_fin_membresia.errors }}
+                    {{ form.fecha_fin_membresia }}{{ form.fecha_fin_membresia.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.tiktok_url.id_for_label }}">TikTok</label>
-                    {{ form.tiktok_url }}
-                    {{ form.tiktok_url.errors }}
+                    {{ form.tiktok_url }}{{ form.tiktok_url.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.facebook_url.id_for_label }}">Facebook</label>
-                    {{ form.facebook_url }}
-                    {{ form.facebook_url.errors }}
+                    {{ form.facebook_url }}{{ form.facebook_url.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.instagram_url.id_for_label }}">Instagram</label>
-                    {{ form.instagram_url }}
-                    {{ form.instagram_url.errors }}
+                    {{ form.instagram_url }}{{ form.instagram_url.errors }}
                 </div>
-
                 <div class="campo">
                     <label for="{{ form.whatsapp_url.id_for_label }}">Enlace de WhatsApp</label>
-                    {{ form.whatsapp_url }}
-                    {{ form.whatsapp_url.errors }}
+                    {{ form.whatsapp_url }}{{ form.whatsapp_url.errors }}
                 </div>
-
                 <div class="campo completo">
-                    <label>
-                        {{ form.activo }}
-                        Visible en el mapa
-                    </label>
+                    <label>{{ form.activo }} Visible en el mapa</label>
                     {{ form.activo.errors }}
                 </div>
             </div>
 
             <div class="botones">
-                <button type="submit" class="guardar">Guardar negocio</button>
+                <button type="submit" class="guardar">
+                    {% if es_edicion %}Guardar cambios{% else %}Guardar negocio{% endif %}
+                </button>
                 <a href="{% url 'mapa_publico' %}" class="boton secundario">
                     Cancelar y volver al mapa
                 </a>
@@ -423,19 +261,18 @@
 {{ provincias_json|json_script:"provincias-data" }}
 {{ distritos_json|json_script:"distritos-data" }}
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <script>
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
-    const regionSelect = document.getElementById("id_region");
-    const provinciaSelect = document.getElementById("id_provincia");
-    const distritoSelect = document.getElementById("id_distrito");
+    const region = document.getElementById("id_region");
+    const provincia = document.getElementById("id_provincia");
+    const distrito = document.getElementById("id_distrito");
 
-    const direccionInput = document.getElementById("id_direccion");
-    const direccionPrevia = document.getElementById("direccion_previa");
+    const direccion = document.getElementById("id_direccion");
+    const previa = document.getElementById("direccion_previa");
 
     const tipoVia = document.getElementById("id_tipo_via");
     const nombreVia = document.getElementById("id_nombre_via");
@@ -447,29 +284,37 @@ document.addEventListener("DOMContentLoaded", function () {
     const puesto = document.getElementById("id_puesto");
     const referencia = document.getElementById("id_referencia");
 
+    const lat = document.getElementById("id_latitud");
+    const lon = document.getElementById("id_longitud");
+
+    const regionGuardada = "{{ form.region.value|default_if_none:''|escapejs }}";
+    const provinciaGuardada = "{{ form.provincia.value|default_if_none:''|escapejs }}";
+    const distritoGuardado = "{{ form.distrito.value|default_if_none:''|escapejs }}";
+
     function leerJSON(id) {
         const elemento = document.getElementById(id);
-        if (!elemento) throw new Error("No se encontró el JSON: " + id);
+        if (!elemento) return [];
         return JSON.parse(elemento.textContent);
     }
 
-    let departamentos, provincias, distritos;
+    let departamentos = [];
+    let provincias = [];
+    let distritos = [];
 
     try {
         departamentos = leerJSON("departamentos-data");
         provincias = leerJSON("provincias-data");
         distritos = leerJSON("distritos-data");
     } catch (error) {
-        console.error("Error leyendo los archivos de ubigeo:", error);
-        regionSelect.innerHTML =
-            '<option value="">Error al cargar regiones</option>';
+        console.error("Error al leer los datos de ubicación:", error);
+        region.innerHTML = '<option value="">Error al cargar regiones</option>';
         return;
     }
 
-    function convertirLista(datos) {
+    function lista(datos) {
         if (Array.isArray(datos)) {
             return datos.flatMap(item => {
-                if (Array.isArray(item)) return convertirLista(item);
+                if (Array.isArray(item)) return lista(item);
                 return item && typeof item === "object" ? [item] : [];
             });
         }
@@ -478,16 +323,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return Object.entries(datos).flatMap(([clave, valor]) => {
             if (Array.isArray(valor)) {
-                return convertirLista(valor).map(item => ({
+                return lista(valor).map(item => ({
                     ...item,
-                    id_padre_ubigeo: item.id_padre_ubigeo ?? clave
+                    __padre: item.__padre ??
+                        item.id_padre_ubigeo ??
+                        item.id_padre ??
+                        item.id_departamento ??
+                        item.departamento_id ??
+                        item.id_provincia ??
+                        item.provincia_id ??
+                        item.padre ??
+                        clave
                 }));
             }
 
             if (valor && typeof valor === "object") {
                 return [{
                     ...valor,
-                    id_padre_ubigeo: valor.id_padre_ubigeo ?? clave
+                    __padre: valor.__padre ??
+                        valor.id_padre_ubigeo ??
+                        valor.id_padre ??
+                        valor.id_departamento ??
+                        valor.departamento_id ??
+                        valor.id_provincia ??
+                        valor.provincia_id ??
+                        valor.padre ??
+                        clave
                 }];
             }
 
@@ -498,9 +359,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function idDe(item) {
         return String(
             item.id_ubigeo ??
-            item.id ??
             item.codigo_ubigeo ??
             item.ubigeo ??
+            item.id ??
+            item.codigo ??
             ""
         );
     }
@@ -508,32 +370,33 @@ document.addEventListener("DOMContentLoaded", function () {
     function nombreDe(item) {
         return String(
             item.nombre_ubigeo ??
-            item.nombre ??
             item.nombre_departamento ??
             item.nombre_provincia ??
             item.nombre_distrito ??
             item.etiqueta_ubigeo ??
+            item.nombre ??
+            item.departamento ??
+            item.provincia ??
+            item.distrito ??
             ""
         );
     }
 
     function padreDe(item) {
         return String(
+            item.__padre ??
             item.id_padre_ubigeo ??
             item.id_padre ??
+            item.id_departamento ??
+            item.departamento_id ??
+            item.id_provincia ??
+            item.provincia_id ??
             item.padre ??
             ""
         );
     }
 
-    function listaHijos(datos, padreId) {
-        const lista = convertirLista(datos);
-        const padre = String(padreId || "");
-
-        return lista.filter(item => padreDe(item) === padre);
-    }
-
-    function agregarOpciones(select, lista, textoInicial) {
+    function poblar(select, items, textoInicial) {
         select.replaceChildren();
 
         const inicial = document.createElement("option");
@@ -543,13 +406,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const vistos = new Set();
 
-        lista.forEach(item => {
+        items.forEach(item => {
             const id = idDe(item);
             const nombre = nombreDe(item);
 
-            if (!id || !nombre || vistos.has(id)) return;
+            if (!nombre) return;
 
-            vistos.add(id);
+            const clave = id || nombre;
+            if (vistos.has(clave)) return;
+            vistos.add(clave);
 
             const opcion = document.createElement("option");
             opcion.value = nombre;
@@ -561,22 +426,17 @@ document.addEventListener("DOMContentLoaded", function () {
         return select.options.length > 1;
     }
 
-    function idSeleccionado(select) {
-        const opcion = select.options[select.selectedIndex];
-        return opcion ? opcion.dataset.ubigeoId || "" : "";
-    }
+    function seleccionar(select, valorGuardado) {
+        const valor = String(valorGuardado ?? "").trim();
+        if (!valor) return false;
 
-    function seleccionarPorValor(select, valorGuardado) {
-        const buscado = String(valorGuardado || "")
-            .trim().toLocaleLowerCase("es");
+        const normalizado = valor.toLocaleLowerCase("es");
 
-        if (!buscado) return false;
-
-        const opcion = Array.from(select.options).find(op => {
-            return String(op.value).trim().toLocaleLowerCase("es") === buscado ||
-                String(op.textContent).trim().toLocaleLowerCase("es") === buscado ||
-                String(op.dataset.ubigeoId || "").trim() === String(valorGuardado).trim();
-        });
+        const opcion = Array.from(select.options).find(item =>
+            item.value.trim().toLocaleLowerCase("es") === normalizado ||
+            item.textContent.trim().toLocaleLowerCase("es") === normalizado ||
+            String(item.dataset.ubigeoId || "") === valor
+        );
 
         if (!opcion) return false;
 
@@ -584,175 +444,114 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
-    function textoSeleccionado(select) {
-        if (!select || select.selectedIndex < 0) return "";
+    function idSeleccionado(select) {
         const opcion = select.options[select.selectedIndex];
-        return opcion && opcion.value ? opcion.textContent.trim() : "";
+        return opcion ? opcion.dataset.ubigeoId || "" : "";
     }
 
-    function valorCampo(campo) {
+    function hijos(datos, padreId) {
+        const padre = String(padreId || "");
+        return lista(datos).filter(item => padreDe(item) === padre);
+    }
+
+    function texto(select) {
+        if (!select || !select.value || select.selectedIndex < 0) return "";
+        return select.options[select.selectedIndex].textContent.trim();
+    }
+
+    function valor(campo) {
         return campo && campo.value ? campo.value.trim() : "";
     }
 
-    function cargarDistritos(provinciaId, distritoGuardado) {
-        agregarOpciones(
-            distritoSelect, [],
-            "Selecciona un distrito"
-        );
-        distritoSelect.disabled = true;
+    function construirDireccion() {
+        const partes = [];
 
-        if (!provinciaId) {
-            actualizarDireccion();
-            return;
+        if (tipoVia && tipoVia.value && texto(tipoVia) !== "---------") {
+            partes.push(texto(tipoVia));
         }
 
-        const lista = listaHijos(distritos, provinciaId);
-        const hayDistritos = agregarOpciones(
-            distritoSelect, lista,
-            "Selecciona un distrito"
-        );
+        if (valor(nombreVia)) partes.push(valor(nombreVia));
+        if (valor(numero)) partes.push("N.° " + valor(numero));
 
-        distritoSelect.disabled = !hayDistritos;
+        const tipoUbicacion = texto(zonaSector);
+        const nombreUbicacion = valor(nombreZona);
 
-        if (distritoGuardado && hayDistritos) {
-            seleccionarPorValor(distritoSelect, distritoGuardado);
+        if (tipoUbicacion && tipoUbicacion !== "---------" && nombreUbicacion) {
+            partes.push(tipoUbicacion + " " + nombreUbicacion);
+        } else if (nombreUbicacion) {
+            partes.push(nombreUbicacion);
+        }
+
+        if (valor(etapa)) partes.push(valor(etapa));
+        if (valor(piso)) partes.push("Piso " + valor(piso));
+        if (valor(puesto)) partes.push("Puesto " + valor(puesto));
+
+        if (texto(distrito)) partes.push("Distrito de " + texto(distrito));
+        if (texto(provincia)) partes.push("Provincia de " + texto(provincia));
+        if (texto(region)) partes.push(texto(region));
+
+        if (valor(referencia)) partes.push("Referencia: " + valor(referencia));
+
+        return partes.join(", ");
+    }
+
+    function actualizarDireccion() {
+        const nueva = construirDireccion();
+
+        if (nueva) {
+            direccion.value = nueva;
+            previa.textContent = nueva;
+        } else if (direccion.value) {
+            previa.textContent = direccion.value;
+        } else {
+            previa.textContent = "Completa los datos de ubicación para generar la dirección.";
+        }
+    }
+
+    function cargarDistritos(provinciaId, distritoPorRestaurar) {
+        poblar(distrito, hijos(distritos, provinciaId), "Selecciona un distrito");
+        distrito.disabled = distrito.options.length <= 1;
+
+        if (distritoPorRestaurar) {
+            seleccionar(distrito, distritoPorRestaurar);
         }
 
         actualizarDireccion();
     }
 
-    function cargarProvincias(regionId, provinciaGuardada, distritoGuardado) {
-        agregarOpciones(
-            provinciaSelect, [],
-            "Selecciona una provincia"
-        );
-        agregarOpciones(
-            distritoSelect, [],
-            "Selecciona un distrito"
-        );
+    function cargarProvincias(regionId, provinciaPorRestaurar, distritoPorRestaurar) {
+        poblar(provincia, hijos(provincias, regionId), "Selecciona una provincia");
+        poblar(distrito, [], "Selecciona un distrito");
 
-        provinciaSelect.disabled = true;
-        distritoSelect.disabled = true;
+        provincia.disabled = provincia.options.length <= 1;
+        distrito.disabled = true;
 
-        if (!regionId) {
-            actualizarDireccion();
-            return;
-        }
-
-        const lista = listaHijos(provincias, regionId);
-        const hayProvincias = agregarOpciones(
-            provinciaSelect, lista,
-            "Selecciona una provincia"
-        );
-
-        provinciaSelect.disabled = !hayProvincias;
-
-        if (provinciaGuardada && hayProvincias &&
-            seleccionarPorValor(provinciaSelect, provinciaGuardada)) {
+        if (
+            provinciaPorRestaurar &&
+            seleccionar(provincia, provinciaPorRestaurar)
+        ) {
             cargarDistritos(
-                idSeleccionado(provinciaSelect),
-                distritoGuardado
+                idSeleccionado(provincia),
+                distritoPorRestaurar
             );
         } else {
             actualizarDireccion();
         }
     }
 
-    const regionGuardada =
-        "{{ form.region.value|default_if_none:''|escapejs }}";
-    const provinciaGuardada =
-        "{{ form.provincia.value|default_if_none:''|escapejs }}";
-    const distritoGuardado =
-        "{{ form.distrito.value|default_if_none:''|escapejs }}";
+    poblar(region, lista(departamentos), "Selecciona una región");
 
-    const listaDepartamentos = convertirLista(departamentos);
-    const regionesCargadas = agregarOpciones(
-        regionSelect,
-        listaDepartamentos,
-        "Selecciona una región"
-    );
-
-    if (!regionesCargadas) {
-        regionSelect.innerHTML =
-            '<option value="">No se encontraron regiones</option>';
-        console.error(
-            "No se reconocieron regiones en departamentos.json",
-            departamentos
-        );
-    }
-
-    regionSelect.addEventListener("change", function () {
-        cargarProvincias(
-            idSeleccionado(regionSelect), "", ""
-        );
+    region.addEventListener("change", function () {
+        cargarProvincias(idSeleccionado(region), "", "");
         actualizarDireccion();
     });
 
-    provinciaSelect.addEventListener("change", function () {
-        cargarDistritos(
-            idSeleccionado(provinciaSelect), ""
-        );
+    provincia.addEventListener("change", function () {
+        cargarDistritos(idSeleccionado(provincia), "");
         actualizarDireccion();
     });
 
-    distritoSelect.addEventListener("change", actualizarDireccion);
-
-    function construirDireccion() {
-        const partes = [];
-
-        if (tipoVia && tipoVia.value) {
-            const etiqueta =
-                tipoVia.options[tipoVia.selectedIndex].text.trim();
-            if (etiqueta && etiqueta !== "---------") partes.push(etiqueta);
-        }
-
-        if (valorCampo(nombreVia)) partes.push(valorCampo(nombreVia));
-        if (valorCampo(numero)) partes.push("N.° " + valorCampo(numero));
-
-        const tipo = textoSeleccionado(zonaSector);
-        const nombre = valorCampo(nombreZona);
-
-        if (tipo && nombre) partes.push(tipo + " " + nombre);
-        else if (nombre) partes.push(nombre);
-        else if (tipo) partes.push(tipo);
-
-        if (valorCampo(etapa)) {
-            const nombreEtapa = valorCampo(etapa);
-            if (/^(galería|centro comercial)\b/i.test(nombreEtapa)) {
-                partes.push(nombreEtapa);
-            } else {
-                partes.push("Galería " + nombreEtapa);
-            }
-        }
-
-        if (valorCampo(piso)) partes.push("piso " + valorCampo(piso));
-        if (valorCampo(puesto)) partes.push("puesto " + valorCampo(puesto));
-
-        if (textoSeleccionado(distritoSelect)) {
-            partes.push("distrito de " + textoSeleccionado(distritoSelect));
-        }
-
-        if (textoSeleccionado(provinciaSelect)) {
-            partes.push("provincia de " + textoSeleccionado(provinciaSelect));
-        }
-
-        if (textoSeleccionado(regionSelect)) {
-            partes.push("región " + textoSeleccionado(regionSelect));
-        }
-
-        if (valorCampo(referencia)) {
-            partes.push("Referencia: " + valorCampo(referencia));
-        }
-
-        return partes.join(", ");
-    }
-
-    function actualizarDireccion() {
-        const direccion = construirDireccion();
-        direccionInput.value = direccion;
-        direccionPrevia.textContent = direccion ||
-            "Completa los datos de ubicación para generar la dirección.";
-    }
+    distrito.addEventListener("change", actualizarDireccion);
 
     [
         tipoVia, nombreVia, numero, zonaSector, nombreZona,
@@ -764,110 +563,141 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Recuperar la ubicación guardada al editar un negocio.
-    if (regionGuardada &&
-        seleccionarPorValor(regionSelect, regionGuardada)) {
+    // Restaurar región, provincia y distrito al editar.
+    if (regionGuardada && seleccionar(region, regionGuardada)) {
         cargarProvincias(
-            idSeleccionado(regionSelect),
+            idSeleccionado(region),
             provinciaGuardada,
             distritoGuardado
         );
     } else {
+        poblar(provincia, [], "Selecciona una provincia");
+        poblar(distrito, [], "Selecciona un distrito");
+        provincia.disabled = true;
+        distrito.disabled = true;
         actualizarDireccion();
     }
 
-    // Mapa interactivo y sincronización de coordenadas.
-    const latitudInput = document.getElementById("id_latitud");
-    const longitudInput = document.getElementById("id_longitud");
-    const contenedorMapa = document.getElementById("mapa-coordenadas");
+    // =====================================================
+    // MAPA: CENTRAR AUTOMÁTICAMENTE CON LATITUD Y LONGITUD
+    // =====================================================
+    if (window.L && document.getElementById("mapa-coordenadas")) {
 
-    if (contenedorMapa && latitudInput && longitudInput &&
-        typeof L !== "undefined") {
+        function coordenadasValidas(latitud, longitud) {
+            return Number.isFinite(latitud) &&
+                   Number.isFinite(longitud) &&
+                   latitud >= -90 && latitud <= 90 &&
+                   longitud >= -180 && longitud <= 180;
+        }
 
-        const latInicial = Number.parseFloat(latitudInput.value);
-        const lonInicial = Number.parseFloat(longitudInput.value);
+        function leerLatitud() {
+            return lat ? parseFloat(lat.value.trim()) : NaN;
+        }
 
-        const coordenadasValidas =
-            Number.isFinite(latInicial) &&
-            Number.isFinite(lonInicial) &&
-            latInicial >= -90 && latInicial <= 90 &&
-            lonInicial >= -180 && lonInicial <= 180;
+        function leerLongitud() {
+            return lon ? parseFloat(lon.value.trim()) : NaN;
+        }
 
-        const centro = coordenadasValidas
+        const latInicial = leerLatitud();
+        const lonInicial = leerLongitud();
+
+        const inicialValida = coordenadasValidas(latInicial, lonInicial);
+
+        const centroInicial = inicialValida
             ? [latInicial, lonInicial]
             : [-12.0464, -77.0428];
 
-        const mapa = L.map(contenedorMapa).setView(
-            centro, coordenadasValidas ? 17 : 12
+        const mapa = L.map("mapa-coordenadas").setView(
+            centroInicial,
+            inicialValida ? 17 : 13
         );
 
         L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             {
                 maxZoom: 19,
-                attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                attribution: "&copy; OpenStreetMap"
             }
         ).addTo(mapa);
 
-        const marcador = L.marker(centro, {
+        const marcador = L.marker(centroInicial, {
             draggable: true
         }).addTo(mapa);
 
-        function leerCoordenada(campo) {
-            return Number.parseFloat(
-                String(campo.value).replace(",", ".")
-            );
+        // Actualiza los campos cuando se selecciona un punto en el mapa.
+        function actualizarCampos(latlng) {
+            if (lat) lat.value = latlng.lat.toFixed(7);
+            if (lon) lon.value = latlng.lng.toFixed(7);
         }
 
-        function actualizarMapaDesdeCampos() {
-            const lat = leerCoordenada(latitudInput);
-            const lon = leerCoordenada(longitudInput);
+        // Centrar el mapa en la ubicación escrita manualmente.
+        function centrarConCoordenadas() {
+            const nuevaLat = leerLatitud();
+            const nuevaLon = leerLongitud();
 
-            if (!Number.isFinite(lat) || !Number.isFinite(lon) ||
-                lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+            if (!coordenadasValidas(nuevaLat, nuevaLon)) {
                 return;
             }
 
-            const nuevaPosicion = [lat, lon];
-            marcador.setLatLng(nuevaPosicion);
-            mapa.setView(nuevaPosicion, Math.max(mapa.getZoom(), 17));
+            const posicion = L.latLng(nuevaLat, nuevaLon);
+
+            marcador.setLatLng(posicion);
+
+            mapa.setView(posicion, 17, {
+                animate: true
+            });
+
+            mapa.invalidateSize();
         }
 
-        function actualizarCamposDesdeMapa(latlng) {
-            latitudInput.value = latlng.lat.toFixed(7);
-            longitudInput.value = latlng.lng.toFixed(7);
-
-            latitudInput.dispatchEvent(
-                new Event("change", { bubbles: true })
-            );
-            longitudInput.dispatchEvent(
-                new Event("change", { bubbles: true })
-            );
-        }
-
-        latitudInput.addEventListener("input", actualizarMapaDesdeCampos);
-        latitudInput.addEventListener("change", actualizarMapaDesdeCampos);
-        longitudInput.addEventListener("input", actualizarMapaDesdeCampos);
-        longitudInput.addEventListener("change", actualizarMapaDesdeCampos);
-
-        marcador.on("dragend", function () {
-            actualizarCamposDesdeMapa(marcador.getLatLng());
-        });
-
+        // Al hacer clic, mover el marcador y guardar coordenadas.
         mapa.on("click", function (evento) {
             marcador.setLatLng(evento.latlng);
-            actualizarCamposDesdeMapa(evento.latlng);
+            actualizarCampos(evento.latlng);
+
+            mapa.setView(evento.latlng, Math.max(mapa.getZoom(), 17), {
+                animate: true
+            });
         });
 
+        // Al arrastrar el marcador, actualizar coordenadas.
+        marcador.on("dragend", function () {
+            actualizarCampos(marcador.getLatLng());
+        });
+
+        // Centrar al salir de cada campo o presionar Enter.
+        [lat, lon].forEach(function (campo) {
+            if (!campo) return;
+
+            campo.addEventListener("change", centrarConCoordenadas);
+
+            campo.addEventListener("keydown", function (evento) {
+                if (evento.key === "Enter") {
+                    evento.preventDefault();
+                    centrarConCoordenadas();
+                }
+            });
+        });
+
+        // También centrar cuando el usuario pega coordenadas en un campo.
+        [lat, lon].forEach(function (campo) {
+            if (!campo) return;
+
+            campo.addEventListener("paste", function () {
+                setTimeout(centrarConCoordenadas, 100);
+            });
+        });
+
+        // Asegurar que el mapa se dibuje correctamente al cargar.
         setTimeout(function () {
             mapa.invalidateSize();
-        }, 100);
-    }
 
-    actualizarDireccion();
+            if (inicialValida) {
+                mapa.setView([latInicial, lonInicial], 17);
+            }
+        }, 300);
+    }
 });
 </script>
-
 </body>
 </html>
