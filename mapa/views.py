@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
@@ -154,5 +154,59 @@ def registrar_negocio(request):
             "departamentos_json": departamentos,
             "provincias_json": provincias,
             "distritos_json": distritos,
+        },
+    )
+
+
+@login_required(login_url="/admin/login/")
+def editar_negocio(request, id):
+    # Solo el superusuario puede editar negocios.
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    negocio = get_object_or_404(Negocio, pk=id)
+
+    if request.method == "POST":
+        form = NegocioForm(
+            request.POST,
+            request.FILES,
+            instance=negocio,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                f"El negocio «{negocio.nombre}» se actualizó correctamente.",
+            )
+
+            return redirect("mapa_publico")
+
+    else:
+        form = NegocioForm(instance=negocio)
+
+    # Cargar los datos geográficos que utiliza el formulario.
+    ruta = Path(settings.BASE_DIR) / "ubigeos"
+
+    with open(ruta / "departamentos.json", encoding="utf-8") as f:
+        departamentos = json.load(f)
+
+    with open(ruta / "provincias.json", encoding="utf-8") as f:
+        provincias = json.load(f)
+
+    with open(ruta / "distritos.json", encoding="utf-8") as f:
+        distritos = json.load(f)
+
+    return render(
+        request,
+        "mapa/registrar_negocio.html",
+        {
+            "form": form,
+            "departamentos_json": departamentos,
+            "provincias_json": provincias,
+            "distritos_json": distritos,
+            "es_edicion": True,
+            "negocio": negocio,
         },
     )

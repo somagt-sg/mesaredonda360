@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -41,8 +42,6 @@
         body { min-height: 100vh; }
         button, input, select { font: inherit; }
         button { cursor: pointer; }
-
-        /* CABECERA */
 
         .barra-superior {
             position: relative;
@@ -177,8 +176,6 @@
             border-color: white;
         }
 
-        /* CONTENIDO */
-
         .pagina {
             width: 100%;
             max-width: 1600px;
@@ -255,8 +252,6 @@
             height: 20px;
             flex-shrink: 0;
         }
-
-        /* BUSCADOR */
 
         .panel-busqueda {
             position: relative;
@@ -353,8 +348,6 @@
             box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
         }
 
-        /* SUGERENCIAS */
-
         .sugerencias-busqueda {
             display: none;
             position: absolute;
@@ -415,8 +408,6 @@
             line-height: 1.5;
         }
 
-        /* RESULTADOS */
-
         .barra-resultados {
             display: flex;
             align-items: center;
@@ -452,8 +443,6 @@
 
         .resultado-icono svg { width: 17px; height: 17px; }
         .ayuda-mapa { color: #94a3b8; font-size: 11px; }
-
-        /* MAPA */
 
         .mapa-tarjeta {
             position: relative;
@@ -575,8 +564,6 @@
             color: var(--naranja-oscuro);
         }
 
-        /* CONTROLES LEAFLET */
-
         .leaflet-control-zoom {
             border: 1px solid #e2e8f0 !important;
             border-radius: 11px !important;
@@ -601,8 +588,6 @@
             font-size: 10px !important;
             background: rgba(255,255,255,0.88) !important;
         }
-
-        /* MARCADORES */
 
         .marcador-negocio {
             display: flex;
@@ -661,6 +646,7 @@
         .popup-telefono {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
             margin-top: 7px;
             margin-right: 5px;
@@ -679,7 +665,28 @@
         .popup-como-llegar { background: #1d4ed8; }
         .popup-como-llegar:hover { background: #1e40af; }
 
-        /* AVISO SIN RESULTADOS */
+        /* Botón de edición exclusivo del superusuario. */
+        .popup-editar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 7px;
+            margin-right: 5px;
+            padding: 9px 11px;
+            border: 0;
+            border-radius: 8px;
+            color: #ffffff;
+            background: #ea580c;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .popup-editar:hover {
+            color: #ffffff;
+            background: #c2410c;
+        }
 
         .aviso-vacio {
             display: none;
@@ -699,8 +706,6 @@
             color: #7c2d12;
         }
 
-        /* PIE DE PÁGINA */
-
         .pie {
             display: flex;
             align-items: center;
@@ -715,8 +720,6 @@
         .pie strong { color: var(--azul); }
         .pie-derecha { text-align: right; }
 
-        /* TABLET */
-
         @media (max-width: 900px) {
             .barra-interior { padding: 13px 20px; }
             .pagina { padding: 22px 20px 25px; }
@@ -725,8 +728,6 @@
             .mapa-tarjeta { height: 65vh; min-height: 430px; }
             .pie { padding: 17px 20px; }
         }
-
-        /* CELULARES */
 
         @media (max-width: 600px) {
             .barra-interior {
@@ -1278,6 +1279,28 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
         }
 
+        {% if es_superusuario %}
+        /*
+         * Este enlace solo se genera para el superusuario.
+         * La ruta utiliza el ID real del negocio seleccionado.
+         */
+        const urlEdicionBase = "{% url 'editar_negocio' 0 %}";
+        const urlEdicion = urlEdicionBase.replace(
+            "/0/editar/",
+            "/" + encodeURIComponent(negocio.id) + "/editar/"
+        );
+
+        contenido += `
+            <a
+                class="popup-editar"
+                href="${urlEdicion}"
+                aria-label="Editar los datos de ${nombre || "este negocio"}"
+            >
+                ✏️ Editar datos
+            </a>
+        `;
+        {% endif %}
+
         contenido += "</div>";
         return contenido;
     }
@@ -1302,11 +1325,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const grupoMarcadores = L.featureGroup().addTo(mapa);
 
-    /*
-     * MODO DE REGISTRO:
-     * Solo se genera este bloque cuando Django identifica
-     * a la persona conectada como superusuario.
-     */
     {% if es_superusuario %}
     const botonRegistrarNegocio =
         document.getElementById("botonRegistrarNegocio");
@@ -1516,11 +1534,6 @@ document.addEventListener("DOMContentLoaded", function () {
         elementoCategoria.value = "";
 
         ocultarSugerencias();
-
-        /*
-         * Filtra por el nombre elegido sin volver a encuadrar
-         * todos los marcadores en el mapa.
-         */
         filtrarNegocios(false);
 
         const coordenadas = obtenerCoordenadasValidas(negocio);
