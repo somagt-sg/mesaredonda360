@@ -613,13 +613,16 @@ document.addEventListener("DOMContentLoaded", function () {
             inicialValida ? 17 : 13
         );
 
-        L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            {
-                maxZoom: 19,
-                attribution: "&copy; OpenStreetMap"
-            }
-        ).addTo(mapa);
+        
+L.tileLayer(
+    "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_4qc2_1_d6bbc609d2ed837afc0b3238",
+    {
+        maxZoom: 20,
+        attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }
+).addTo(mapa);
+
 
         const marcador = L.marker(centroInicial, {
             draggable: true
