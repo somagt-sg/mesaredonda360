@@ -31,6 +31,17 @@ ALLOWED_HOSTS = [
 
 
 # =========================================================
+# CLOUDINARY
+# =========================================================
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
+
+
+# =========================================================
 # APLICACIONES
 # =========================================================
 
@@ -159,7 +170,7 @@ USE_TZ = True
 
 
 # =========================================================
-# ARCHIVOS ESTÁTICOS
+# ARCHIVOS ESTÁTICOS Y ARCHIVOS SUBIDOS
 # =========================================================
 
 STATIC_URL = "/static/"
@@ -168,7 +179,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+        ),
     },
     "staticfiles": {
         "BACKEND": (
