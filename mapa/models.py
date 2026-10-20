@@ -99,6 +99,12 @@ class Negocio(models.Model):
         verbose_name="Distrito",
     )
 
+    zona_sector = models.CharField(
+        max_length=150,
+        blank=True,
+        verbose_name="Zona / Sector / Urbanización / Asociación / Asentamiento humano / Otro",
+    )
+
     tipo_via = models.CharField(
         max_length=20,
         choices=TIPOS_VIA,
@@ -166,7 +172,19 @@ class Negocio(models.Model):
     telefono = models.CharField(
         max_length=30,
         blank=True,
-        verbose_name="Teléfono o WhatsApp",
+        verbose_name="Teléfono principal o WhatsApp",
+    )
+
+    telefono_2 = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name="Teléfono adicional 2",
+    )
+
+    telefono_3 = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name="Teléfono adicional 3",
     )
 
     # =====================================================

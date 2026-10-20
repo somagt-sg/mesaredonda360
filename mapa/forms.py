@@ -1,4 +1,3 @@
-
 from django import forms
 from .models import Negocio
 
@@ -41,6 +40,24 @@ class NegocioForm(forms.ModelForm):
         },
     )
 
+    
+    zona_sector = forms.ChoiceField(
+        required=False,
+        label="Zona / Sector / Urbanización / Asociación / Asentamiento humano / Otro",
+        choices=[
+            ("", "Selecciona una opción"),
+            ("Zona", "Zona"),
+            ("Sector", "Sector"),
+            ("Urbanización", "Urbanización"),
+            ("Asociación", "Asociación"),
+            ("Asentamiento humano", "Asentamiento humano"),
+            ("Otro", "Otro"),
+        ],
+        widget=forms.Select(
+            attrs={"id": "id_zona_sector"}
+        ),
+    )
+
     piso = forms.TypedChoiceField(
         required=False,
         coerce=int,
@@ -57,6 +74,7 @@ class NegocioForm(forms.ModelForm):
     puesto = forms.CharField(
         required=False,
         max_length=50,
+        label="Puesto / Stand",
         widget=forms.TextInput(
             attrs={
                 "id": "id_puesto",
@@ -77,6 +95,64 @@ class NegocioForm(forms.ModelForm):
         ),
     )
 
+    # RUC opcional. Si se ingresa, debe tener exactamente 11 dígitos.
+    ruc = forms.CharField(
+        required=False,
+        max_length=11,
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_ruc",
+                "type": "text",
+                "maxlength": "11",
+                "inputmode": "numeric",
+                "pattern": "[0-9]{11}",
+                "placeholder": "Ingresa los 11 dígitos del RUC",
+                "oninput": "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)",
+            }
+        ),
+        error_messages={
+            "max_length": "El RUC debe contener exactamente 11 dígitos.",
+        },
+    )
+
+    # Teléfono principal.
+    telefono = forms.CharField(
+        required=False,
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_telefono",
+                "type": "tel",
+                "placeholder": "Teléfono principal o WhatsApp",
+            }
+        ),
+    )
+
+    # Teléfonos adicionales opcionales.
+    telefono_2 = forms.CharField(
+        required=False,
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_telefono_2",
+                "type": "tel",
+                "placeholder": "Segundo teléfono (opcional)",
+            }
+        ),
+    )
+
+    telefono_3 = forms.CharField(
+        required=False,
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_telefono_3",
+                "type": "tel",
+                "placeholder": "Tercer teléfono (opcional)",
+            }
+        ),
+    )
+
     class Meta:
         model = Negocio
 
@@ -85,11 +161,16 @@ class NegocioForm(forms.ModelForm):
             "imagen",
             "ruc",
             "categoria",
+
             "telefono",
+            "telefono_2",
+            "telefono_3",
 
             "region",
             "provincia",
             "distrito",
+            "zona_sector",
+
             "tipo_via",
             "nombre_via",
             "numero",
@@ -191,7 +272,10 @@ class NegocioForm(forms.ModelForm):
             "direccion": "Dirección definitiva",
             "etapa": "Galería, centro comercial o etapa",
             "piso": "Piso (del 1 al 20)",
-            "puesto": "Puesto",
+            "puesto": "Puesto / Stand",
+            "telefono": "Teléfono principal o WhatsApp",
+            "telefono_2": "Segundo teléfono",
+            "telefono_3": "Tercer teléfono",
         }
 
     def clean_region(self):
@@ -202,3 +286,13 @@ class NegocioForm(forms.ModelForm):
 
     def clean_distrito(self):
         return self.cleaned_data["distrito"].strip()
+
+    def clean_ruc(self):
+        ruc = (self.cleaned_data.get("ruc") or "").strip()
+
+        if ruc and (len(ruc) != 11 or not ruc.isdigit()):
+            raise forms.ValidationError(
+                "El RUC debe contener exactamente 11 dígitos numéricos."
+            )
+
+        return ruc
