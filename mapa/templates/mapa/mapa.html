@@ -890,7 +890,27 @@
                 transition: none !important;
             }
         }
-    </style>
+        </style>
+
+    <!-- Configuración de la aplicación MesaRedonda360 -->
+    <link rel="manifest"
+          href="{% static 'mapa/pwa/manifest.webmanifest' %}">
+
+    <meta name="theme-color" content="#123a63">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MesaRedonda360">
+
+    <!-- Icono de la aplicación -->
+    <link rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="{% static 'mapa/pwa/icons/icon-192.png' %}">
+
+    <!-- Icono para dispositivos Apple -->
+    <link rel="apple-touch-icon"
+          href="{% static 'mapa/pwa/icons/icon-192.png' %}">
+
 </head>
 
 <body>
