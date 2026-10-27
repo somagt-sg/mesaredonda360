@@ -240,3 +240,9 @@ def editar_negocio(request, id):
             "negocio": negocio,
         },
     )
+
+def politica_privacidad(request):
+    return render(
+        request,
+        "mapa/privacidad.html",
+    )
