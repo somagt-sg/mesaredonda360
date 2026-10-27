@@ -1,14 +1,33 @@
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.http import JsonResponse
+
 import json
 from pathlib import Path
+
 from django.conf import settings
 
 from .models import Negocio
 from .forms import NegocioForm
+
+
+def assetlinks(request):
+    return JsonResponse([
+        {
+            "relation": [
+                "delegate_permission/common.handle_all_urls"
+            ],
+            "target": {
+                "namespace": "android_app",
+                "package_name": "com.somagt.mesaredonda360",
+                "sha256_cert_fingerprints": [
+                    "73:4E:B9:FA:0D:99:40:0B:B1:AD:AB:01:00:AD:4E:59:08:01:C1:FA:7F:14:3D:EB:27:9C:DF:CA:85:08:52:06"
+                ],
+            },
+        }
+    ], safe=False)
 
 
 def mapa_publico(request):
@@ -33,11 +52,15 @@ def mapa_publico(request):
             "latitud": float(negocio.latitud),
             "longitud": float(negocio.longitud),
             "plan": negocio.plan,
+            "imagen": (
+                negocio.imagen.url
+                if negocio.imagen
+                else ""
+            ),
             "redes": {},
             "catalogo": [],
         }
 
-        # Las redes sociales solo se publican para membresías activas.
         if (
             negocio.plan in ("premium", "catalogo")
             and negocio.estado_membresia == "activa"
@@ -49,12 +72,13 @@ def mapa_publico(request):
                 "WhatsApp": negocio.whatsapp_url,
             }
 
-        # El catálogo se muestra únicamente en el plan Catálogo activo.
         if (
             negocio.plan == "catalogo"
             and negocio.estado_membresia == "activa"
         ):
-            for producto in negocio.productos_catalogo.filter(activo=True):
+            for producto in negocio.productos_catalogo.filter(
+                activo=True
+            ):
                 datos["catalogo"].append({
                     "nombre": producto.nombre,
                     "codigo": producto.codigo,
@@ -95,7 +119,10 @@ def registrar_negocio(request):
     longitud = request.GET.get("lon", "")
 
     if request.method == "POST":
-        form = NegocioForm(request.POST, request.FILES)
+        form = NegocioForm(
+            request.POST,
+            request.FILES,
+        )
 
         if form.is_valid():
             negocio = form.save()
@@ -117,11 +144,6 @@ def registrar_negocio(request):
             }
         )
 
-    # =====================================================
-    # CARGAR ARCHIVOS DE UBIGEO
-    # Ubicación: carpeta raíz del proyecto / ubigeos
-    # =====================================================
-
     ruta = Path(settings.BASE_DIR) / "ubigeos"
 
     with open(
@@ -142,10 +164,6 @@ def registrar_negocio(request):
     ) as f:
         distritos = json.load(f)
 
-    # =====================================================
-    # MOSTRAR FORMULARIO DE REGISTRO
-    # =====================================================
-
     return render(
         request,
         "mapa/registrar_negocio.html",
@@ -160,11 +178,13 @@ def registrar_negocio(request):
 
 @login_required(login_url="/admin/login/")
 def editar_negocio(request, id):
-    # Solo el superusuario puede editar negocios.
     if not request.user.is_superuser:
         raise PermissionDenied
 
-    negocio = get_object_or_404(Negocio, pk=id)
+    negocio = get_object_or_404(
+        Negocio,
+        pk=id,
+    )
 
     if request.method == "POST":
         form = NegocioForm(
@@ -184,18 +204,28 @@ def editar_negocio(request, id):
             return redirect("mapa_publico")
 
     else:
-        form = NegocioForm(instance=negocio)
+        form = NegocioForm(
+            instance=negocio,
+        )
 
-    # Cargar los datos geográficos que utiliza el formulario.
     ruta = Path(settings.BASE_DIR) / "ubigeos"
 
-    with open(ruta / "departamentos.json", encoding="utf-8") as f:
+    with open(
+        ruta / "departamentos.json",
+        encoding="utf-8",
+    ) as f:
         departamentos = json.load(f)
 
-    with open(ruta / "provincias.json", encoding="utf-8") as f:
+    with open(
+        ruta / "provincias.json",
+        encoding="utf-8",
+    ) as f:
         provincias = json.load(f)
 
-    with open(ruta / "distritos.json", encoding="utf-8") as f:
+    with open(
+        ruta / "distritos.json",
+        encoding="utf-8",
+    ) as f:
         distritos = json.load(f)
 
     return render(
