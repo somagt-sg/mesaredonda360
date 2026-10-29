@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -23,7 +24,7 @@ def assetlinks(request):
                 "namespace": "android_app",
                 "package_name": "com.somagt.mesaredonda360",
                 "sha256_cert_fingerprints": [
-                    "73:4E:B9:FA:0D:99:40:0B:B1:AD:AB:01:00:AD:4E:59:08:01:C1:FA:7F:14:3D:EB:27:9C:DF:CA:85:08:52:06"
+                    "0C:0D:86:F8:EA:6D:DD:C0:0F:38:A3:8E:9A:C9:8B:FE:35:39:EB:ED:4D:43:A1:6D:27:2B:08:3B:FB:F1:8C:ED"
                 ],
             },
         }
@@ -240,6 +241,7 @@ def editar_negocio(request, id):
             "negocio": negocio,
         },
     )
+
 
 def politica_privacidad(request):
     return render(
